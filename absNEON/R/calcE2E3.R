@@ -75,7 +75,7 @@ calcE2E3<-function(
     abs250<-abs250[,c("sampleID","absorbance")]
     names(abs250)[names(abs250) == "absorbance"] <- "abs250"
     abs365<-combinedData[(combinedData$wavelength=="364"|combinedData$wavelength=="366"),]
-    abs365<-plyr::ddply(abs365,c("sampleID"),summarise,abs365=mean(absorbance)) #Estimates 365 from average of 364 and 366 
+    abs365<-plyr::ddply(abs365,c("sampleID"),dplyr::summarise,abs365=mean(absorbance)) #Estimates 365 from average of 364 and 366 
     E2E3<-merge(abs250,abs365,by.x="sampleID",by.y="sampleID",all.x=T,all.y=T)
     E2E3$E2E3<-E2E3$abs250/E2E3$abs365
   
@@ -86,7 +86,7 @@ calcE2E3<-function(
     abs250Corrected<-abs250Corrected[,c("sampleID","absorbance")]
     names(abs250Corrected)[names(abs250Corrected) == "absorbance"] <- "abs250Corrected"
     abs365Corrected<-combinedData[(combinedData$wavelength=="364"|combinedData$wavelength=="366"),]
-    abs365Corrected<-plyr::ddply(abs365Corrected,c("sampleID"),summarise,abs365Corrected=mean(absorbance)) 
+    abs365Corrected<-plyr::ddply(abs365Corrected,c("sampleID"),dplyr::summarise,abs365Corrected=mean(absorbance)) 
     E2E3Corrected<-merge(abs250Corrected,abs365Corrected,by.x="sampleID",by.y="sampleID",all.x=T,all.y=T)
     E2E3Corrected$E2E3Corrected<-E2E3Corrected$abs250Corrected/E2E3Corrected$abs365Corrected
   }
