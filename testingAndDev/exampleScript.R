@@ -26,6 +26,8 @@ outputWide <- absNEON::formatWide(absorbanceData)
 # Use the functions in the package...
 outputSuva254 <- absNEON::calcSuva254(absorbanceData, concentrationData, correctFe =
                                         FALSE)
+outputSuva280 <- absNEON::calcSuva280(absorbanceData, concentrationData, correctFe =
+                                        FALSE)
 outputSuva350 <- absNEON::calcSuva350(absorbanceData, concentrationData, correctFe =
                                         FALSE)
 outputE2E3 <- absNEON::calcE2E3(absorbanceData, concentrationData, correctFe =
