@@ -54,7 +54,7 @@ calcSuva280<-function(
 
   absorbanceAveraged$sampleID.wavelength<-NULL
 
-  #' Formats and adds older, discrete absorbance values from concentration table
+  # Formats and adds older, discrete absorbance values from concentration table
   absorbanceDiscrete<-concentrationData[(concentrationData$analyte=="UV Absorbance (280 nm)"),]
   absorbanceDiscrete$wavelength<-280
   absorbanceDiscrete<-absorbanceDiscrete[,c("sampleID","domainID","siteID","collectDate","wavelength","analyteConcentration")]
