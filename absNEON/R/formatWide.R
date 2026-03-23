@@ -7,7 +7,7 @@
 #' @description This function re-formats National Ecological Observatory 
 #' Network (NEON) UV-Vis absorbance data from long format into wide format. 
 
-#' @param absorbanceData User input of the table of NEON absorbance data [dataframe]
+#' @param absorbanceData User input of the table of NEON absorbance data [data.frame]
 
 #' @return This function returns a table absorbance values in wide format.
 
@@ -19,7 +19,7 @@
 #' @examples
 #' #Using an example file
 #' #outputData <- formatWide(
-#' absorbanceData=swc_externalLabAbsorbanceScan)
+#' #absorbanceData=swc_externalLabAbsorbanceScan)
 
 #' @export
 
@@ -33,22 +33,22 @@ formatWide<-function(
     return(NULL)
   }
   
-  #' Averages replicate absorbance scans
+  # Averages replicate absorbance scans
   absorbanceData$sampleID.wavelength<-paste(absorbanceData$sampleID, absorbanceData$wavelength, sep=".")
-  absorbanceData<-plyr::ddply(absorbanceData,c("sampleID.wavelength"),summarise,sampleID=unique(sampleID),domainID=unique(domainID),siteID=unique(siteID),
+  absorbanceData<-plyr::ddply(absorbanceData,c("sampleID.wavelength"),plyr::summarise,sampleID=unique(sampleID),domainID=unique(domainID),siteID=unique(siteID),
                               collectDate=unique(collectDate),wavelength=unique(wavelength),absorbance=mean(decadicAbsorbance)) 
   absorbanceData$sampleID.wavelength<-NULL
   
-  #' Converts to wide format
+  # Converts to wide format
   wideFormat <- reshape(
-    longFormat,
+    absorbanceData,
     idvar = c("sampleID"),        
     timevar = "wavelength",      
     v.names = "absorbance", 
     direction = "wide"     
   )
   
-  #' Formats output table
+  # Formats output table
   outputTable<-unique(absorbanceData[,c("domainID","siteID","sampleID","collectDate")])
   outputTable<-merge(outputTable,wideFormat,by.x="sampleID",by.y="sampleID",all.x=T,all.y=F)
   outputTable<-outputTable[, c(2,3,1,4:195)]

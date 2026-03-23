@@ -8,10 +8,10 @@
 #' ratio from National Ecological Observatory Network (NEON) water
 #' chemistry data.
 
-#' @param absorbanceData User input of the table of NEON absorbance data [dataframe]
-#' @param concentrationData User input of the table of NEON concentration data [dataframe]
+#' @param absorbanceData User input of the table of NEON absorbance data [data.frame]
+#' @param concentrationData User input of the table of NEON concentration data [data.frame]
 #' @param correctFe User input of whether correction for overlapping absorbption of Fe(III)
-#' should also be included. See README for more information. Defaults to FALSE. [boolean]
+#' should also be included. See README for more information. Defaults to FALSE. [logical]
 
 #' @import tidyverse
 
@@ -25,9 +25,9 @@
 #' @examples
 #' #Using an example file
 #' #outputData <- calcE2E3(
-#' absorbanceData=swc_externalLabAbsorbanceScan,
-#' concentrationData=swc_externalLabDataByAnalyte,
-#' correctFe=FALSE)
+#' #absorbanceData=swc_externalLabAbsorbanceScan,
+#' #concentrationData=swc_externalLabDataByAnalyte,
+#' #correctFe=FALSE)
 
 #' @export
 
@@ -43,17 +43,18 @@ calcE2E3<-function(
     return(NULL)
   }
   
-  #' Averages replicate absorbance scans
+  # Averages replicate absorbance scans
   absorbanceData$sampleID.wavelength<-paste(absorbanceData$sampleID, absorbanceData$wavelength, sep=".")
   absorbanceData<-absorbanceData |> dplyr::group_by(sampleID.wavelength) |> dplyr::summarize(
                 sampleID=unique(sampleID),domainID=unique(domainID),siteID=unique(siteID),
                 collectDate=unique(collectDate),wavelength=unique(wavelength),absorbance=mean(decadicAbsorbance)) 
+
   absorbanceData$sampleID.wavelength<-NULL
   
-  #' No concentration required if Fe correction not performed
+  # No concentration required if Fe correction not performed
   combinedData<-absorbanceData
   
-  #' Adds Fe concentrations if input condition is true
+  # Adds Fe concentrations if input condition is true
   if(correctFe == TRUE){
     Fe<-concentrationData[(concentrationData$analyte=="Fe"),]
     if(nrow(Fe) < 1){
@@ -68,7 +69,7 @@ calcE2E3<-function(
   }
   
   
-  #' Performs calculation without any corrections
+  # Performs calculation without any corrections
     abs250<-combinedData[(combinedData$wavelength=="250"),]
     abs250<-abs250[,c("sampleID","absorbance")]
     names(abs250)[names(abs250) == "absorbance"] <- "abs250"
@@ -78,7 +79,7 @@ calcE2E3<-function(
     E2E3$E2E3<-E2E3$abs250/E2E3$abs365
   
   
-  #' Performs calculation with Fe correction
+  # Performs calculation with Fe correction
   if(correctFe == TRUE){
     abs250Corrected<-combinedData[(combinedData$wavelength=="250"),]
     abs250Corrected<-abs250Corrected[,c("sampleID","absorbance")]
@@ -89,7 +90,7 @@ calcE2E3<-function(
     E2E3Corrected$E2E3Corrected<-E2E3Corrected$abs250Corrected/E2E3Corrected$abs365Corrected
   }
   
-  #' Formats output table
+  # Formats output table
   outputTable<-unique(absorbanceData[,c("domainID","siteID","sampleID","collectDate")])
   outputTable<-merge(outputTable,E2E3,by.x="sampleID",by.y="sampleID",all.x=T,all.y=F)
   outputTable<-outputTable[,c("domainID","siteID","sampleID","collectDate","E2E3")]

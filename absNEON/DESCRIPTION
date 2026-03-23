@@ -1,0 +1,12 @@
+Package: absNEON
+Title: NEON absorbance package
+Version: 0.0.0.9000
+Authors@R: 
+    c(person("Hensley", "Robert", email = "hensley@battelleecology.org", role = c("aut", "cre")), person("Cawley","Kaelin",role=c("ctb")))
+Description: Contains functions for working with NEON water chemistry UV-Vis absorbance data and calculating common metrics.
+Depends: R (>= 4.1.0)
+Imports: plyr,dplyr,tidyr,purrr,tidyverse,broom
+License: AGPL-3 + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
