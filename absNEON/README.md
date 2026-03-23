@@ -13,11 +13,11 @@ The NEON Absorbance Package (absNEON) contains functions to analyzing National E
 
 To use this package, the chemical properties of surface water data product (DP1.20093.001) should first be downloaded into the local environment using the neonUtilities R package.
 
-For all the functions, the A and B replicate absorbance scans of the same sample are averaged. Replicate samples collected on the same date are not averaged.
+For all the functions, the A and B replicate absorbance scans of the same sample are averaged. Replicate samples collected on the same date are not averaged. For **calcSuva254** and **calcSuva280**, discrete wavelength samples will be included if the inputs include data collected prior to the switch to full spectrum in Fall 2023. Because the required wavelengths were not measured, the other functions cannot be run on samples collected prior to the switch to full spectrum in Fall 2023. 
 
 The **formatWide** function reformats the absorbance data from the default long format table into a wide format table, with each column containing absorbance measurements for a respective wavelength.  This function should not be used to generate the inputs for the other functions, as they utilize the default long format tables.
 
-The **calcSuva254** function calculates the specific ultra-violet absorbance (units L/mg/m) at the 254 nm wavelength by dividing the absorbance (units 1/cm) by the dissolved organic carbon (DOC) concentration (units mg/L) and multiplying by 100 (conversion from 1/cm to 1/m). The **calcSuva350** function uses the same method to calculate SUVA at 350 nm.
+The **calcSuva254** function calculates the specific ultra-violet absorbance (units L/mg/m) at the 254 nm wavelength by dividing the absorbance (units 1/cm) by the dissolved organic carbon (DOC) concentration (units mg/L) and multiplying by 100 (conversion from 1/cm to 1/m). The **calcSuva280** and **calcSuva350** functions use the same method to calculate SUVA at 280 nm and 350 nm respectively.
 
 The **calcE2E3** function calculates the E2:E3 absorbance ratio by dividing the absorbance at 250 nm to the absorbance at 365 nm.  Because NEON absorbance is measured at 2 nm intervals, the average of the absorbance at 364 nm and 366 nm is used to estimate absorbance at 365 nm.
 

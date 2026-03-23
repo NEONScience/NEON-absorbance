@@ -9,7 +9,7 @@ siteID <- "COMO"
 inputData <- neonUtilities::loadByProduct(
   dpID = "DP1.20093.001",
   site = siteID,
-  startdate = "2023-10",
+  startdate = "2021-10",
   enddate = "2025-09",
   package = "expanded",
   include.provisional = T,

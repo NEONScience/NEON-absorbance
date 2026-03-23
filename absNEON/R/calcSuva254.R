@@ -38,7 +38,7 @@ calcSuva254<-function(
     concentrationData,
     correctFe=FALSE){
   
-  # Keeps only wavelengths required for specific function
+  # Keeps only wavelengths from full-spectrum scan required for specific function
   absorbanceData<-absorbanceData[(absorbanceData$wavelength=="254"),]
   if(nrow(absorbanceData) < 1){
     print("Error: No absorbance data")
@@ -53,6 +53,15 @@ calcSuva254<-function(
                 collectDate=unique(collectDate),wavelength=unique(wavelength),absorbance=mean(decadicAbsorbance)) 
 
   absorbanceAveraged$sampleID.wavelength<-NULL
+  
+  #' Formats and adds older, discrete absorbance values from concentration table
+  absorbanceDiscrete<-concentrationData[(concentrationData$analyte=="UV Absorbance (254 nm)"),]
+  absorbanceDiscrete$wavelength<-254
+  absorbanceDiscrete<-absorbanceDiscrete[,c("sampleID","domainID","siteID","collectDate","wavelength","analyteConcentration")]
+  colnames(absorbanceDiscrete)<-c("sampleID","domainID","siteID","collectDate","wavelength","absorbance")
+  absorbanceDiscrete <- absorbanceDiscrete[!(absorbanceDiscrete$sampleID %in% absorbanceAveraged$sampleID), ]
+  absorbanceAveraged<-rbind(absorbanceDiscrete,absorbanceAveraged)
+  
   
   # Adds DOC concentration data 
   DOC<-concentrationData[(concentrationData$analyte=="DOC"),]
