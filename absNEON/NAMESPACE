@@ -3,6 +3,7 @@
 export(calcE2E3)
 export(calcSR)
 export(calcSuva254)
+export(calcSuva280)
 export(calcSuva350)
 export(formatWide)
 import(tidyverse)
