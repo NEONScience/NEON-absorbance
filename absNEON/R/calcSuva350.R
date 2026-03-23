@@ -46,11 +46,13 @@ calcSuva350<-function(
   }
   
   # Averages replicate absorbance scans
-  absorbanceData<-absorbanceData |> dplyr::group_by(sampleID.wavelength) |> dplyr::summarize(
-                sampleID=unique(sampleID),domainID=unique(domainID),siteID=unique(siteID),
-                collectDate=unique(collectDate),wavelength=unique(wavelength),absorbance=mean(decadicAbsorbance)) 
-
-  absorbanceData$sampleID.wavelength<-NULL
+  absorbanceAveraged<-absorbanceData
+  absorbanceAveraged$sampleID.wavelength<-paste(absorbanceAveraged$sampleID, absorbanceAveraged$wavelength, sep=".")
+  absorbanceAveraged<-absorbanceAveraged |> dplyr::group_by(sampleID.wavelength) |> dplyr::summarize(
+    sampleID=unique(sampleID),domainID=unique(domainID),siteID=unique(siteID),
+    collectDate=unique(collectDate),wavelength=unique(wavelength),absorbance=mean(decadicAbsorbance)) 
+  
+  absorbanceAveraged$sampleID.wavelength<-NULL
   
   # Adds DOC concentration data 
   DOC<-concentrationData[(concentrationData$analyte=="DOC"),]
@@ -60,7 +62,7 @@ calcSuva350<-function(
   }
   DOC<-DOC[,c("sampleID","analyteConcentration")]
   colnames(DOC)<-c("sampleID","DOC")
-  combinedData<-merge(absorbanceData, DOC,by.x="sampleID",by.y="sampleID")
+  combinedData<-merge(absorbanceAveraged, DOC,by.x="sampleID",by.y="sampleID")
   # Adds Fe concentrations if input condition is true
   if(correctFe == TRUE){
     Fe<-concentrationData[(concentrationData$analyte=="Fe"),]

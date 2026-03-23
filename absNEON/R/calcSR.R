@@ -44,14 +44,16 @@ calcSR<-function(
   }
   
   # Averages replicate absorbance scans
-  absorbanceData$sampleID.wavelength<-paste(absorbanceData$sampleID, absorbanceData$wavelength, sep=".")
-  absorbanceData<-absorbanceData |> dplyr::group_by(sampleID.wavelength) |> dplyr::summarize(
-                sampleID=unique(sampleID),domainID=unique(domainID),siteID=unique(siteID),
-                collectDate=unique(collectDate),wavelength=unique(wavelength),absorbance=mean(decadicAbsorbance)) 
-  absorbanceData$sampleID.wavelength<-NULL
+  absorbanceAveraged<-absorbanceData
+  absorbanceAveraged$sampleID.wavelength<-paste(absorbanceAveraged$sampleID, absorbanceAveraged$wavelength, sep=".")
+  absorbanceAveraged<-absorbanceAveraged |> dplyr::group_by(sampleID.wavelength) |> dplyr::summarize(
+    sampleID=unique(sampleID),domainID=unique(domainID),siteID=unique(siteID),
+    collectDate=unique(collectDate),wavelength=unique(wavelength),absorbance=mean(decadicAbsorbance)) 
+  
+  absorbanceAveraged$sampleID.wavelength<-NULL
   
   # No concentration required if Fe correction not performed
-  combinedData<-absorbanceData
+  combinedData<-absorbanceAveraged
   
   # Adds Fe concentrations if input condition is true
   if(correctFe == TRUE){
@@ -62,7 +64,7 @@ calcSR<-function(
     }
     Fe<-Fe[,c("sampleID","analyteConcentration")]
     colnames(Fe)<-c("sampleID","Fe")
-    combinedData<-merge(absorbanceData, Fe,by.x="sampleID",by.y="sampleID")
+    combinedData<-merge(absorbanceAveraged, Fe,by.x="sampleID",by.y="sampleID")
     combinedData$absorbanceFe<-combinedData$Fe*((-0.00000044*(combinedData$wavelength^2))-(0.00007755*combinedData$wavelength)+0.11337671)
     combinedData$absorbanceCorrected<-combinedData$absorbance-combinedData$absorbanceFe
   }
@@ -132,7 +134,7 @@ calcSR<-function(
     }
   
   # Formats output table
-  outputTable<-unique(absorbanceData[,c("domainID","siteID","sampleID","collectDate")])
+  outputTable<-unique(absorbanceAveraged[,c("domainID","siteID","sampleID","collectDate")])
   outputTable<-merge(outputTable,SlopeRatios,by.x="sampleID",by.y="sampleID",all.x=T,all.y=F)
   outputTable<-outputTable[,c("domainID","siteID","sampleID","collectDate","SR")]
 

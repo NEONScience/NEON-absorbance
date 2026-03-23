@@ -34,14 +34,17 @@ formatWide<-function(
   }
   
   # Averages replicate absorbance scans
-  absorbanceData$sampleID.wavelength<-paste(absorbanceData$sampleID, absorbanceData$wavelength, sep=".")
-  absorbanceData<-plyr::ddply(absorbanceData,c("sampleID.wavelength"),plyr::summarise,sampleID=unique(sampleID),domainID=unique(domainID),siteID=unique(siteID),
-                              collectDate=unique(collectDate),wavelength=unique(wavelength),absorbance=mean(decadicAbsorbance)) 
-  absorbanceData$sampleID.wavelength<-NULL
+  absorbanceAveraged<-absorbanceData
+  absorbanceAveraged$sampleID.wavelength<-paste(absorbanceAveraged$sampleID, absorbanceAveraged$wavelength, sep=".")
+  absorbanceAveraged<-absorbanceAveraged |> dplyr::group_by(sampleID.wavelength) |> dplyr::summarize(
+    sampleID=unique(sampleID),domainID=unique(domainID),siteID=unique(siteID),
+    collectDate=unique(collectDate),wavelength=unique(wavelength),absorbance=mean(decadicAbsorbance)) 
+  
+  absorbanceAveraged$sampleID.wavelength<-NULL
   
   # Converts to wide format
   wideFormat <- reshape(
-    absorbanceData,
+    absorbanceAveraged,
     idvar = c("sampleID"),        
     timevar = "wavelength",      
     v.names = "absorbance", 
@@ -49,7 +52,7 @@ formatWide<-function(
   )
   
   # Formats output table
-  outputTable<-unique(absorbanceData[,c("domainID","siteID","sampleID","collectDate")])
+  outputTable<-unique(absorbanceAveraged[,c("domainID","siteID","sampleID","collectDate")])
   outputTable<-merge(outputTable,wideFormat,by.x="sampleID",by.y="sampleID",all.x=T,all.y=F)
   outputTable<-outputTable[, c(2,3,1,4:195)]
 
