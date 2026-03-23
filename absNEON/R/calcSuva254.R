@@ -13,7 +13,7 @@
 #' @param correctFe User input of whether correction for overlapping absorbption of Fe(III)
 #' should also be included. See README for more information. Defaults to FALSE. [boolean]
  
-#' @import plyr
+#' @import tidyverse
 
 #' @return This function returns a table of SUVA254 values
 
@@ -47,8 +47,9 @@ calcSuva254<-function(
   
   #' Averages replicate absorbance scans
   absorbanceData$sampleID.wavelength<-paste(absorbanceData$sampleID, absorbanceData$wavelength, sep=".")
-  absorbanceData<-plyr::ddply(absorbanceData,c("sampleID.wavelength"),summarise,sampleID=unique(sampleID),domainID=unique(domainID),siteID=unique(siteID),
-                              collectDate=unique(collectDate),wavelength=unique(wavelength),absorbance=mean(decadicAbsorbance)) 
+  absorbanceData<-absorbanceData |> dplyr::group_by(sampleID.wavelength) |> dplyr::summarize(
+                sampleID=unique(sampleID),domainID=unique(domainID),siteID=unique(siteID),
+                collectDate=unique(collectDate),wavelength=unique(wavelength),absorbance=mean(decadicAbsorbance)) 
   absorbanceData$sampleID.wavelength<-NULL
   
   #' Adds DOC concentration data 
