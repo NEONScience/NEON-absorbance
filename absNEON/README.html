@@ -368,7 +368,12 @@ product (DP1.20093.001) should first be downloaded into the local
 environment using the neonUtilities R package.</p>
 <p>For all the functions, the A and B replicate absorbance scans of the
 same sample are averaged. Replicate samples collected on the same date
-are not averaged.</p>
+are not averaged. For <strong>calcSuva254</strong> and
+<strong>calcSuva280</strong>, discrete wavelength samples will be
+included if the inputs include data collected prior to the switch to
+full spectrum in Fall 2023. Because the required wavelengths were not
+measured, the other functions cannot be run on samples collected prior
+to the switch to full spectrum in Fall 2023.</p>
 <p>The <strong>formatWide</strong> function reformats the absorbance
 data from the default long format table into a wide format table, with
 each column containing absorbance measurements for a respective
@@ -378,8 +383,13 @@ the other functions, as they utilize the default long format tables.</p>
 ultra-violet absorbance (units L/mg/m) at the 254 nm wavelength by
 dividing the absorbance (units 1/cm) by the dissolved organic carbon
 (DOC) concentration (units mg/L) and multiplying by 100 (conversion from
-1/cm to 1/m). The <strong>calcSuva350</strong> function uses the same
-method to calculate SUVA at 350 nm.</p>
+1/cm to 1/m). The <strong>calcSuva280</strong> and
+<strong>calcSuva350</strong> functions use the same method to calculate
+SUVA at 280 nm and 350 nm respectively. The <strong>calcSuvaX</strong>
+function uses the same method to calculate SUVA at a user specified
+wavelength. Because NEON absorbance is measured at 2 nm intervals, if
+the specified wavlength is odd, the average of the absorbance at the
+preceding and following even wavelengths will be used.</p>
 <p>The <strong>calcE2E3</strong> function calculates the E2:E3
 absorbance ratio by dividing the absorbance at 250 nm to the absorbance
 at 365 nm. Because NEON absorbance is measured at 2 nm intervals, the

@@ -30,6 +30,8 @@ outputSuva280 <- absNEON::calcSuva280(absorbanceData, concentrationData, correct
                                         FALSE)
 outputSuva350 <- absNEON::calcSuva350(absorbanceData, concentrationData, correctFe =
                                         FALSE)
+outputSuva400 <- absNEON::calcSuvaX(absorbanceData, concentrationData, wavelength = 400, correctFe =
+                                        FALSE)
 outputE2E3 <- absNEON::calcE2E3(absorbanceData, concentrationData, correctFe =
                                   TRUE)
 outputSR <- absNEON::calcSR(absorbanceData, concentrationData, correctFe =
