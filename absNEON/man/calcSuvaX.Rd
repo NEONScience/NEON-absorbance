@@ -11,13 +11,13 @@ calcSuvaX(absorbanceData, concentrationData, wavelength, correctFe = FALSE)
 
 \item{concentrationData}{User input of the table of NEON concentration data \link{data.frame}}
 
+\item{wavelength}{User input of the wavelength to return data for. \link{numeric}}
+
 \item{correctFe}{User input of whether correction for overlapping absorbption of Fe(III)
 should also be included. See README for more information. Defaults to FALSE. \link{logical}}
-
-\item{wavlength}{User input of the wavelength to return data for. \link{numeric}}
 }
 \value{
-This function returns a table of SUVA values at the specified wavelength.
+This function returns a table of SUVA values at the specified wavelength
 }
 \description{
 This function calculates the specific ultra-violet absorbance
@@ -29,7 +29,7 @@ Network (NEON) water chemistry data.
 #outputData <- calcSuvaX(
 #absorbanceData=swc_externalLabAbsorbanceScan,
 #concentrationData=swc_externalLabDataByAnalyte,
-#wavelength=401,
+#wavelength=400,
 #correctFe=FALSE)
 }
 \references{

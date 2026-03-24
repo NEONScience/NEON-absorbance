@@ -10,7 +10,7 @@
 
 #' @param absorbanceData User input of the table of NEON absorbance data [data.frame]
 #' @param concentrationData User input of the table of NEON concentration data [data.frame]
-#' @param wavlength User input of the wavelength to return data for. [numeric]
+#' @param wavelength User input of the wavelength to return data for. [numeric]
 #' @param correctFe User input of whether correction for overlapping absorbption of Fe(III)
 #' should also be included. See README for more information. Defaults to FALSE. [logical]
 
