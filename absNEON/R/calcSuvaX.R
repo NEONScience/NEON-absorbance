@@ -16,7 +16,7 @@
 
 #' @import tidyverse
 
-#' @return This function returns a table of SUVA254 values
+#' @return This function returns a table of SUVA values at the specified wavelength
 
 #' @references
 #' License: GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007
@@ -28,7 +28,7 @@
 #' #outputData <- calcSuvaX(
 #' #absorbanceData=swc_externalLabAbsorbanceScan,
 #' #concentrationData=swc_externalLabDataByAnalyte,
-#' #wavelength=401,
+#' #wavelength=400,
 #' #correctFe=FALSE)
 
 #' @export

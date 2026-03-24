@@ -17,7 +17,7 @@ should also be included. See README for more information. Defaults to FALSE. \li
 \item{wavlength}{User input of the wavelength to return data for. \link{numeric}}
 }
 \value{
-This function returns a table of SUVA254 values
+This function returns a table of SUVA values at the specified wavelength.
 }
 \description{
 This function calculates the specific ultra-violet absorbance
