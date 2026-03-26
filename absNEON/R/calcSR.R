@@ -37,24 +37,21 @@ calcSR<-function(
     absorbanceData,
     concentrationData,
     correctFe=FALSE){
-  
+
   if(nrow(absorbanceData) < 1){
     print("Error: No absorbance data")
     return(NULL)
   }
-  
+
   # Averages replicate absorbance scans
   absorbanceAveraged<-absorbanceData
   absorbanceAveraged$sampleID.wavelength<-paste(absorbanceAveraged$sampleID, absorbanceAveraged$wavelength, sep=".")
   absorbanceAveraged<-absorbanceAveraged |> dplyr::group_by(sampleID.wavelength) |> dplyr::summarize(
     sampleID=unique(sampleID),domainID=unique(domainID),siteID=unique(siteID),
-    collectDate=unique(collectDate),wavelength=unique(wavelength),absorbance=mean(decadicAbsorbance)) 
-  
+    collectDate=unique(collectDate),wavelength=unique(wavelength),absorbance=mean(decadicAbsorbance))
+
   absorbanceAveraged$sampleID.wavelength<-NULL
-  
-  # No concentration required if Fe correction not performed
-  combinedData<-absorbanceAveraged
-  
+
   # Adds Fe concentrations if input condition is true
   if(correctFe == TRUE){
     Fe<-concentrationData[(concentrationData$analyte=="Fe"),]
@@ -65,74 +62,75 @@ calcSR<-function(
     Fe<-Fe[,c("sampleID","analyteConcentration")]
     colnames(Fe)<-c("sampleID","Fe")
     combinedData<-merge(absorbanceAveraged, Fe,by.x="sampleID",by.y="sampleID")
+    combinedData<-na.omit(combinedData)
     combinedData$absorbanceFe<-combinedData$Fe*((-0.00000044*(combinedData$wavelength^2))-(0.00007755*combinedData$wavelength)+0.11337671)
     combinedData$absorbanceCorrected<-combinedData$absorbance-combinedData$absorbanceFe
   }
-  
+
   # Performs calculation without any corrections
   # Calculates slope from 275-295 nm
-  slopes275 <- combinedData |> 
-    dplyr::filter(wavelength >= 275 & wavelength <= 295) |> 
-    dplyr::group_by(sampleID) |> 
-    tidyr::nest() |> 
-    dplyr::mutate(S = purrr::map(data, ~lm(log(absorbance) ~ wavelength, data = .x))) |> 
-    dplyr::mutate(slope = purrr::map(S, ~broom::tidy(.x))) |> 
-    tidyr::unnest(slope) |> 
-    dplyr::select(sampleID, term, estimate) |> 
-    tidyr::pivot_wider(names_from = term, values_from = estimate) |> 
-    dplyr::rename("intercept275" = `(Intercept)`,"slope275" = wavelength) |> 
-    dplyr::ungroup() |> 
+  slopes275 <- absorbanceAveraged |>
+    dplyr::filter(wavelength >= 275 & wavelength <= 295) |>
+    dplyr::group_by(sampleID) |>
+    tidyr::nest() |>
+    dplyr::mutate(S = purrr::map(data, ~lm(log(absorbance) ~ wavelength, data = .x))) |>
+    dplyr::mutate(slope = purrr::map(S, ~broom::tidy(.x))) |>
+    tidyr::unnest(slope) |>
+    dplyr::select(sampleID, term, estimate) |>
+    tidyr::pivot_wider(names_from = term, values_from = estimate) |>
+    dplyr::rename("intercept275" = `(Intercept)`,"slope275" = wavelength) |>
+    dplyr::ungroup() |>
     dplyr::mutate(slope275 = slope275*-1)
   # Calculates slope from 350-400 nm
-  slopes350 <- combinedData |> 
-    dplyr::filter(wavelength >= 350 & wavelength <= 400) |> 
-    dplyr::group_by(sampleID) |> 
-    tidyr::nest() |> 
-    dplyr::mutate(S = purrr::map(data, ~lm(log(absorbance) ~ wavelength, data = .x))) |> 
-    dplyr::mutate(slope = purrr::map(S, ~broom::tidy(.x))) |> 
-    tidyr::unnest(slope) |> 
-    dplyr::select(sampleID, term, estimate) |> 
-    tidyr::pivot_wider(names_from = term, values_from = estimate) |> 
-    dplyr::rename("intercept350" = `(Intercept)`,"slope350" = wavelength) |> 
-    dplyr::ungroup() |> 
+  slopes350 <- absorbanceAveraged |>
+    dplyr::filter(wavelength >= 350 & wavelength <= 400) |>
+    dplyr::group_by(sampleID) |>
+    tidyr::nest() |>
+    dplyr::mutate(S = purrr::map(data, ~lm(log(absorbance) ~ wavelength, data = .x))) |>
+    dplyr::mutate(slope = purrr::map(S, ~broom::tidy(.x))) |>
+    tidyr::unnest(slope) |>
+    dplyr::select(sampleID, term, estimate) |>
+    tidyr::pivot_wider(names_from = term, values_from = estimate) |>
+    dplyr::rename("intercept350" = `(Intercept)`,"slope350" = wavelength) |>
+    dplyr::ungroup() |>
     dplyr::mutate(slope350 = slope350*-1)
   # Calculates spectral slope ratio
   SlopeRatios <- merge(x = slopes275, y = slopes350,by = "sampleID") |>
     dplyr::mutate(SR = slope275/slope350)
 
-  
+
   # Performs calculation with Fe correction
   if(correctFe == TRUE){
-    slopes275Corrected <- combinedData |> 
-      dplyr::filter(wavelength >= 275 & wavelength <= 295) |> 
-      dplyr::group_by(sampleID) |> 
-      tidyr::nest() |> 
-      dplyr::mutate(S = purrr::map(data, ~lm(log(absorbanceCorrected) ~ wavelength, data = .x))) |> 
-      dplyr::mutate(slope = purrr::map(S, ~broom::tidy(.x))) |> 
-      tidyr::unnest(slope) |> 
-      dplyr::select(sampleID, term, estimate) |> 
-      tidyr::pivot_wider(names_from = term, values_from = estimate) |> 
-      dplyr::rename("intercept275" = `(Intercept)`,"slope275" = wavelength) |> 
-      dplyr::ungroup() |> 
+    slopes275Corrected <- combinedData |>
+      dplyr::filter(wavelength >= 275 & wavelength <= 295) |>
+      dplyr::group_by(sampleID) |>
+      tidyr::nest() |>
+      dplyr::mutate(S = purrr::map(data, ~lm(log(absorbanceCorrected) ~ wavelength, data = .x))) |>
+      dplyr::mutate(slope = purrr::map(S, ~broom::tidy(.x))) |>
+      tidyr::unnest(slope) |>
+      dplyr::select(sampleID, term, estimate) |>
+      tidyr::pivot_wider(names_from = term, values_from = estimate) |>
+      dplyr::rename("intercept275" = `(Intercept)`,"slope275" = wavelength) |>
+      dplyr::ungroup() |>
       dplyr::mutate(slope275 = slope275*-1)
     # Calculates slope from 350-400 nm
-    slopes350Corrected <- combinedData |> 
-      dplyr::filter(wavelength >= 350 & wavelength <= 400) |> 
-      dplyr::group_by(sampleID) |> 
-      tidyr::nest() |> 
-      dplyr::mutate(S = purrr::map(data, ~lm(log(absorbanceCorrected) ~ wavelength, data = .x))) |> 
-      dplyr::mutate(slope = purrr::map(S, ~broom::tidy(.x))) |> 
-      tidyr::unnest(slope) |> 
-      dplyr::select(sampleID, term, estimate) |> 
-      tidyr::pivot_wider(names_from = term, values_from = estimate) |> 
-      dplyr::rename("intercept350" = `(Intercept)`,"slope350" = wavelength) |> 
-      dplyr::ungroup() |> 
+    slopes350Corrected <- combinedData |>
+      dplyr::filter(wavelength >= 350 & wavelength <= 400) |>
+      dplyr::group_by(sampleID) |>
+      tidyr::nest() |>
+      dplyr::mutate(S = purrr::map(data, ~lm(log(absorbanceCorrected) ~ wavelength, data = .x))) |>
+      dplyr::mutate(slope = purrr::map(S, ~broom::tidy(.x))) |>
+      tidyr::unnest(slope) |>
+      dplyr::select(sampleID, term, estimate) |>
+      tidyr::pivot_wider(names_from = term, values_from = estimate) |>
+      dplyr::rename("intercept350" = `(Intercept)`,"slope350" = wavelength) |>
+      dplyr::ungroup() |>
       dplyr::mutate(slope350 = slope350*-1)
     # Calculates spectral slope ratio
     SlopeRatiosCorrected <- merge(x = slopes275Corrected, y = slopes350Corrected,by = "sampleID") |>
-      dplyr::mutate(SRCorrected = slope275/slope350)  
+      dplyr::mutate(SRCorrected = slope275/slope350)
     }
-  
+
   # Formats output table
   outputTable<-unique(absorbanceAveraged[,c("domainID","siteID","sampleID","collectDate")])
   outputTable<-merge(outputTable,SlopeRatios,by.x="sampleID",by.y="sampleID",all.x=T,all.y=F)
@@ -142,6 +140,6 @@ calcSR<-function(
     outputTable<-merge(outputTable,SlopeRatiosCorrected,by.x="sampleID",by.y="sampleID",all.x=T,all.y=F)
     outputTable<-outputTable[,c("domainID","siteID","sampleID","collectDate","SR","SRCorrected")]
   }
-  
+
   return(outputTable)
 }
