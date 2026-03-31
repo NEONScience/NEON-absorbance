@@ -75,6 +75,8 @@ calcSuva280<-function(
   # Adds Fe concentrations if input condition is true
   if(correctFe == TRUE){
     Fe<-concentrationData[(concentrationData$analyte=="Fe"),]
+    # Replaces below detection values with half the detection limit
+    for (i in 1:nrow(Fe)){if(!is.na(Fe[i,which(colnames(Fe)=="belowDetectionQF")]))(Fe[i,which(colnames(Fe)=="analyteConcentration")]=0.0005)}
     Fe<-Fe[,c("sampleID","analyteConcentration")]
     colnames(Fe)<-c("sampleID","Fe")
     combinedData<-merge(combinedData, Fe,by.x="sampleID",by.y="sampleID")
