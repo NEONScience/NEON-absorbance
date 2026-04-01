@@ -59,8 +59,6 @@ calcSR<-function(
       print("Error: No concentration data")
       return(NULL)
     }
-    # Replaces below detection values with half the detection limit
-    for (i in 1:nrow(Fe)){if(!is.na(Fe[i,which(colnames(Fe)=="belowDetectionQF")]))(Fe[i,which(colnames(Fe)=="analyteConcentration")]=0.0005)}
     Fe<-Fe[,c("sampleID","analyteConcentration")]
     colnames(Fe)<-c("sampleID","Fe")
     combinedData<-merge(absorbanceAveraged, Fe,by.x="sampleID",by.y="sampleID")
