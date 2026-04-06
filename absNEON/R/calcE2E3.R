@@ -83,10 +83,10 @@ calcE2E3<-function(
   # Performs calculation with Fe correction
   if(correctFe == TRUE){
     abs250Corrected<-combinedData[(combinedData$wavelength=="250"),]
-    abs250Corrected<-abs250Corrected[,c("sampleID","absorbance")]
+    abs250Corrected<-abs250Corrected[,c("sampleID","absorbanceCorrected")]
     names(abs250Corrected)[names(abs250Corrected) == "absorbance"] <- "abs250Corrected"
     abs365Corrected<-combinedData[(combinedData$wavelength=="364"|combinedData$wavelength=="366"),]
-    abs365Corrected<-plyr::ddply(abs365Corrected,c("sampleID"),dplyr::summarise,abs365Corrected=mean(absorbance))
+    abs365Corrected<-plyr::ddply(abs365Corrected,c("sampleID"),dplyr::summarise,abs365Corrected=mean(absorbanceCorrected))
     E2E3Corrected<-merge(abs250Corrected,abs365Corrected,by.x="sampleID",by.y="sampleID",all.x=T,all.y=T)
     E2E3Corrected$E2E3Corrected<-E2E3Corrected$abs250Corrected/E2E3Corrected$abs365Corrected
   }
