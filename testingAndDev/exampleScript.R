@@ -1,8 +1,10 @@
 
+# Install the package from github
+# Install pak package from CRAN
+pak::pak("NEONScience/NEON-absorbance/absNEON")
 
 
 # This is an example script for using the functions in the absNEON package
-
 siteID <- "COMO"
 
 # Pulls surface water chemistry data from NEON data portal and loads tables into R environment
