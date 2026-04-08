@@ -40,10 +40,6 @@ calcSuva280<-function(
 
   # Keeps only wavelengths from full-spectrum scan required for specific function
   absorbanceData<-absorbanceData[(absorbanceData$wavelength=="280"),]
-  if(nrow(absorbanceData) < 1){
-    print("Error: No absorbance data")
-    return(NULL)
-  }
 
   # Averages replicate absorbance scans
   absorbanceAveraged<-absorbanceData
@@ -62,6 +58,10 @@ calcSuva280<-function(
   absorbanceDiscrete <- absorbanceDiscrete[!(absorbanceDiscrete$sampleID %in% absorbanceAveraged$sampleID), ]
   absorbanceAveraged<-rbind(absorbanceDiscrete,absorbanceAveraged)
 
+  if(nrow(absorbanceData) < 1){
+    print("Error: No absorbance data")
+    return(NULL)
+  }
 
   # Adds DOC concentration data
   DOC<-concentrationData[(concentrationData$analyte=="DOC"),]
