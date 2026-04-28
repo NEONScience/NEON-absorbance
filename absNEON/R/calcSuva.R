@@ -1,5 +1,5 @@
 ################################################################################
-#' @title calcSuvaX
+#' @title calcSuva
 
 #' @author
 #' Robert Hensley \email{hensley@battelleecology.org} \cr
@@ -25,7 +25,7 @@
 
 #' @examples
 #' #Using an example file
-#' #outputData <- calcSuvaX(
+#' #outputData <- calcSuva(
 #' #absorbanceData=swc_externalLabAbsorbanceScan,
 #' #concentrationData=swc_externalLabDataByAnalyte,
 #' #wavelength=400,
@@ -35,7 +35,7 @@
 
 # changelog and author contributions / copyrights
 ################################################################################
-calcSuvaX<-function(
+calcSuva<-function(
     absorbanceData,
     concentrationData,
     wavelength,
